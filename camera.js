@@ -1,7 +1,7 @@
 ﻿// JavaScript source code
 
-// Import Scanbot SDK from CDN (works on Firebase Hosting)
-import "https://cdn.jsdelivr.net/npm/scanbot-web-sdk@latest/bundle/ScanbotSDK.ui2.min.js";
+// Import Scanbot SDK
+import "/node_modules/scanbot-web-sdk/bundle/ScanbotSDK.ui2.min.js";
 
 // License key
 const LICENSE_KEY =
@@ -32,7 +32,6 @@ async function initializeScanbotSDK() {
     try {
         sdkInstance = await ScanbotSDK.initialize({
             license: LICENSE_KEY,
-            // Use CDN for enginePath - works on Firebase Hosting
             enginePath: "https://cdn.jsdelivr.net/npm/scanbot-web-sdk@latest/bundle/bin/complete/",
         });
         console.log("Scanbot SDK initialized successfully");

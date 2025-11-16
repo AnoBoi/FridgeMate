@@ -5,7 +5,9 @@ import {
   getFirestore,
   collection,
   addDoc,
-  onSnapshot
+  onSnapshot,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 // Your firebase config
@@ -29,7 +31,51 @@ const authArea = document.getElementById('authArea');
 const fridgesContainer = document.getElementById('fridgesContainer');
 const createFridgeCardEl = document.getElementById('createFridgeBtnCard'); // insertion point
 
-// Utility: escape HTML to avoid injection
+// Element that will show "My User UID: ..."
+let uidDisplayEl = null;
+
+/* ---------- UID display helper (adds/updates small text under "My Fridges") ---------- */
+
+function findMyFridgesHeading() {
+  // look for headings and common title classes that contain "My Fridges"
+  const candidates = document.querySelectorAll('h1,h2,h3,h4,.page-title,.section-title,.title');
+  for (const el of candidates) {
+    if (el && el.textContent && el.textContent.trim().toLowerCase().includes('my fridges')) {
+      return el;
+    }
+  }
+  return null;
+}
+
+function createOrUpdateUidDisplay(uid) {
+  // create element if missing
+  if (!uidDisplayEl) {
+    const header = findMyFridgesHeading();
+    uidDisplayEl = document.createElement('p');
+    uidDisplayEl.id = 'myUserUidText';
+    uidDisplayEl.className = 'text-muted small mb-3';
+    uidDisplayEl.style.marginTop = '0.25rem';
+    // insert directly under the "My Fridges" heading if found, otherwise insert before the fridges container
+    if (header && header.parentNode) {
+      header.parentNode.insertBefore(uidDisplayEl, header.nextSibling);
+    } else if (fridgesContainer && fridgesContainer.parentNode) {
+      fridgesContainer.parentNode.insertBefore(uidDisplayEl, fridgesContainer);
+    } else {
+      // final fallback: append to body
+      document.body.insertBefore(uidDisplayEl, document.body.firstChild);
+    }
+  }
+
+  uidDisplayEl.textContent = `My User UID: ${uid || '—'}`;
+}
+
+function clearUidDisplay() {
+  if (uidDisplayEl) {
+    uidDisplayEl.textContent = `My User UID: —`;
+  }
+}
+
+/* ---------- Utility: escape HTML to avoid injection ---------- */
 function escapeHtml(str) {
   return String(str || '')
     .replace(/&/g, '&amp;')
@@ -39,7 +85,7 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-// UI rendering for auth area
+/* ---------- UI rendering for auth area ---------- */
 function getDisplayNameOrEmail(user) {
   if (!user) return '';
   if (user.displayName && user.displayName.trim() !== '') return user.displayName;
@@ -61,6 +107,7 @@ function renderSignedOut() {
   `;
   stopFridgeListener();
   clearFridgeCards();
+  clearUidDisplay();
 }
 
 function renderSignedIn(user) {
@@ -88,6 +135,9 @@ function renderSignedIn(user) {
     }
   });
 
+  // ensure UID display is created/updated
+  createOrUpdateUidDisplay(user.uid);
+
   // start listening to fridges once signed in
   startFridgeListener();
 }
@@ -95,40 +145,72 @@ function renderSignedIn(user) {
 /* ---------- Firestore membership check & rendering ---------- */
 
 // Determine if the current user (uid) is present in allowedUsers.
-// allowedUsers might be:
-// - an object where keys are arbitrary and values are objects that have a userId field
-// - an array of objects with userId fields
-// - undefined/null
+// New canonical shape: allowedUsers is an object map where keys are UIDs and values are boolean true.
+// But keep backward compatibility with older shapes (array/object of user objects).
 function isUserAllowed(allowedUsers, uid) {
   if (!uid) return false;
   if (!allowedUsers) return false;
-  // array case
+
+  // canonical boolean-map case: allowedUsers[uid] === true
+  if (typeof allowedUsers === 'object' && !Array.isArray(allowedUsers) && allowedUsers.hasOwnProperty(uid)) {
+    return allowedUsers[uid] === true;
+  }
+
+  // array case: [{ userId, displayName, ... }, ...]
   if (Array.isArray(allowedUsers)) {
-    return allowedUsers.some(item => item && item.userId === uid);
+    return allowedUsers.some(item => item && (item.userId === uid || item.uid === uid));
   }
-  // object/map-like case
+
+  // object/map-like older case where values are objects containing userId
   if (typeof allowedUsers === 'object') {
-    return Object.values(allowedUsers).some(item => item && item.userId === uid);
+    return Object.values(allowedUsers).some(item => item && (item.userId === uid || item.uid === uid));
   }
+
   return false;
 }
 
+// Return list of member display names (best-effort).
+// For boolean-map we don't have display names stored, so fall back to generic 'Member' placeholders.
 function getMembersList(allowedUsers) {
   if (!allowedUsers) return [];
-  let vals = [];
+  // array of user objects
   if (Array.isArray(allowedUsers)) {
-    vals = allowedUsers;
-  } else if (typeof allowedUsers === 'object') {
-    vals = Object.values(allowedUsers);
+    return allowedUsers.map(v => (v && (v.displayName || v.email || v.userId || v.uid)) || 'Member');
   }
-  // map to display names if available or fallback to 'Member'
-  return vals.map(v => (v && (v.displayName || v.email || v.userId)) || 'Member');
+  // object: could be boolean map { uid: true } or object map { key: { userId, displayName } }
+  if (typeof allowedUsers === 'object') {
+    const vals = Object.entries(allowedUsers).map(([key, val]) => {
+      // if val is boolean true, we only have uid (the key)
+      if (val === true || val === false) {
+        // no displayName stored; return generic name or truncated uid for debugging
+        return 'Member';
+      }
+      // if val is object with displayName/email/userId
+      if (val && typeof val === 'object') {
+        return val.displayName || val.email || val.userId || key;
+      }
+      // fallback to key
+      return key;
+    });
+    return vals;
+  }
+  return [];
 }
 
 function getMemberCount(allowedUsers) {
   if (!allowedUsers) return 0;
   if (Array.isArray(allowedUsers)) return allowedUsers.length;
-  if (typeof allowedUsers === 'object') return Object.keys(allowedUsers).length;
+  if (typeof allowedUsers === 'object') {
+    // if values are booleans, count only truthy ones
+    const keys = Object.keys(allowedUsers);
+    let count = 0;
+    for (const k of keys) {
+      const v = allowedUsers[k];
+      if (v === true) count++;
+      else if (v && typeof v === 'object') count++; // legacy user object
+    }
+    return count;
+  }
   return 0;
 }
 
@@ -198,21 +280,25 @@ function buildFridgeCard(docId, data) {
 /* ---------- Listener lifecycle ---------- */
 
 function startFridgeListener() {
-  if (fridgesUnsub) {
-    // already listening
-    return;
-  }
+  // ensure we remove any previous listener first (supports re-starting)
+  stopFridgeListener();
+
+  if (!userUID) return;
+
   const fridgesCol = collection(db, 'Fridges');
-  fridgesUnsub = onSnapshot(fridgesCol, (snapshot) => {
+  // query for documents where allowedUsers.<uid> == true
+  const q = query(fridgesCol, where(`allowedUsers.${userUID}`, '==', true));
+
+  fridgesUnsub = onSnapshot(q, (snapshot) => {
     // clear existing cards
     clearFridgeCards();
 
     snapshot.forEach(doc => {
       const data = doc.data();
-      // only render fridges where the current user is listed in allowedUsers
-      if (userUID && isUserAllowed(data && data.allowedUsers, userUID)) {
+      // defensive check: prefer server-side filtering, but keep local check for legacy data shapes
+      if (isUserAllowed(data && data.allowedUsers, userUID)) {
         const cardNode = buildFridgeCard(doc.id, data);
-        // insert above the Create card (append to container keeps all cards before the Create button)
+        // insert into container
         fridgesContainer.appendChild(cardNode);
       }
     });
@@ -238,11 +324,15 @@ function clearFridgeCards() {
 onAuthStateChanged(auth, (user) => {
   if (user) {
     userUID = user.uid;
+    // update UID display immediately
+    createOrUpdateUidDisplay(userUID);
     renderSignedIn(user);
   } else {
     userUID = null;
-    window.location.replace("/index.html");
+    // set UI for signed out
     renderSignedOut();
+    // redirect as before
+    window.location.replace("/index.html");
   }
 });
 
@@ -269,12 +359,15 @@ if (form) {
 
     try {
       // Add a new document with a generated id.
-      // Setting allowedUsers to an object with current user as a single member.
+      // Setting allowedUsers to a map of booleans where current user UID => true
+      const allowed = {};
+      if (userUID) {
+        allowed[userUID] = true;
+      }
+
       await addDoc(collection(db, "Fridges"), {
         name: name,
-        allowedUsers: {
-          user_1: { userId: userUID, displayName: getDisplayNameOrEmail(auth.currentUser) }
-        },
+        allowedUsers: allowed,
         createdAt: new Date()
       });
 

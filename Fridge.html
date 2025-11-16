@@ -52,6 +52,49 @@
     </nav>
 
     <div class="container py-4">
+
+        <!-- NEW: Invite card that spans horizontally above the two cards -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div
+                        class="card-body d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+                        <h5 class="card-title mb-0">Invite a person to your Fridge</h5>
+                        <!-- form: input to the right, add button to the right of the input -->
+                        <form id="inviteForm" class="d-flex w-100 w-sm-auto" role="form" onsubmit="return false;">
+                            <div class="input-group">
+                                <input id="inviteUidInput" type="text" class="form-control"
+                                    placeholder="Enter person's UID" aria-label="Person UID">
+                                <button id="inviteAddBtn" class="btn"
+                                    style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;"
+                                    type="submit">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end invite card -->
+         
+        <!-- View Fridge History card (place under the Invite card) -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0">View Fridge History</h5>
+
+                        <div>
+                            <button id="viewFridgeHistoryBtn" type="button" class="btn"
+                                style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">
+                                View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="row g-4 align-items-start">
             <!-- Left card: Add to Fridge -->
             <div class="col-12 col-md-6">

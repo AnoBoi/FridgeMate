@@ -1,7 +1,7 @@
 ﻿// JavaScript source code
 
 // 🚨 IMPORTANT: Adjust this import path to where your Scanbot SDK bundle is located
-import "path/to/scanbot-web-sdk/bundle/ScanbotSDK.ui2.min.js"; 
+import "https://AnoBoi.github.io/FridgeMate/scanbot-web-sdk/bundle/ScanbotSDK.ui2.min.js";
 
 // Replace 'YOUR_SCANBOT_LICENSE_KEY' with your actual key
 const LICENSE_KEY = "Q3Av52D/P+BAewHQaLnwnmp6mgIKnw" +

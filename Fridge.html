@@ -1,20 +1,23 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Shared Fridge – Add Items</title>
+    <title>Shared Fridge — Add Items</title>
 
     <!-- Bootstrap 5.0 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark border-bottom" style="background-color:#fe5a5a;">
         <div class="container">
             <div class="d-flex align-items-center gap-4">
                 <a class="navbar-brand d-flex align-items-center" href="/">
-                    <img src="images/logo.png" alt="FridgeMate" width="140" height="55" class="d-inline-block align-text-top">
+                    <img src="images/logo.png" alt="FridgeMate" width="140" height="55"
+                        class="d-inline-block align-text-top">
                     <span class="visually-hidden">FridgeMate</span>
                 </a>
 
@@ -29,7 +32,7 @@
             </div>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
-                    aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+                aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -49,6 +52,49 @@
     </nav>
 
     <div class="container py-4">
+
+        <!-- NEW: Invite card that spans horizontally above the two cards -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div
+                        class="card-body d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+                        <h5 class="card-title mb-0">Invite a person to your Fridge</h5>
+                        <!-- form: input to the right, add button to the right of the input -->
+                        <form id="inviteForm" class="d-flex w-100 w-sm-auto" role="form" onsubmit="return false;">
+                            <div class="input-group">
+                                <input id="inviteUidInput" type="text" class="form-control"
+                                    placeholder="Enter person's UID" aria-label="Person UID">
+                                <button id="inviteAddBtn" class="btn"
+                                    style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;"
+                                    type="submit">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end invite card -->
+         
+        <!-- View Fridge History card (place under the Invite card) -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0">View Fridge History</h5>
+
+                        <div>
+                            <button id="viewFridgeHistoryBtn" type="button" class="btn"
+                                style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">
+                                View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="row g-4 align-items-start">
             <!-- Left card: Add to Fridge -->
             <div class="col-12 col-md-6">
@@ -59,28 +105,35 @@
                         <form id="fridgeForm" class="mt-3">
                             <!-- Camera button + product name -->
                             <div class="mb-3 d-flex align-items-center">
-                                <!-- REMOVED: <input type="file" accept="image/*" id="fridgePhoto" class="d-none"> -->
-                                <button type="button" id="fridgeCameraBtn" class="btn me-2" style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">
+                                <input type="file" accept="image/*" id="fridgePhoto" class="d-none">
+                                <button type="button" id="fridgeCameraBtn" class="btn me-2"
+                                    style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">
                                     <!-- inline camera icon -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
-                                        <path d="M9.5 2a.5.5 0 0 1 .5.5V3h2.5A1.5 1.5 0 0 1 14 4.5v6A1.5 1.5 0 0 1 12.5 12H3.5A1.5 1.5 0 0 1 2 10.5v-6A1.5 1.5 0 0 1 3.5 3H6v-.5A.5.5 0 0 1 6.5 2h3z" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-camera" viewBox="0 0 16 16">
+                                        <path
+                                            d="M9.5 2a.5.5 0 0 1 .5.5V3h2.5A1.5 1.5 0 0 1 14 4.5v6A1.5 1.5 0 0 1 12.5 12H3.5A1.5 1.5 0 0 1 2 10.5v-6A1.5 1.5 0 0 1 3.5 3H6v-.5A.5.5 0 0 1 6.5 2h3z" />
                                         <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
                                     </svg>
                                 </button>
 
-                                <input type="text" class="form-control" id="fridgeProductName" placeholder="Product name" aria-label="Product name">
+                                <input type="text" class="form-control" id="fridgeProductName"
+                                    placeholder="Product name" aria-label="Product name">
                             </div>
 
                             <!-- Quantity and expiry date -->
                             <div class="mb-3 d-flex align-items-center">
-                                <input type="number" class="form-control form-control-sm me-3" id="fridgeQuantity" placeholder="Qty" min="1" style="max-width:90px;" aria-label="Quantity">
+                                <input type="number" class="form-control form-control-sm me-3" id="fridgeQuantity"
+                                    placeholder="Qty" min="1" style="max-width:90px;" aria-label="Quantity">
 
                                 <input type="date" class="form-control" id="fridgeExpiry" aria-label="Expiry date">
                             </div>
 
                             <!-- Add to fridge button -->
                             <div class="d-grid">
-                                <button type="submit" class="btn" style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">Add to Fridge</button>
+                                <button type="submit" class="btn"
+                                    style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">Add to
+                                    Fridge</button>
                             </div>
                         </form>
 
@@ -96,29 +149,37 @@
 
                         <form id="dbForm" class="mt-3">
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="dbProductName" placeholder="Product name" aria-label="Database product name">
+                                <input type="text" class="form-control" id="dbProductName" placeholder="Product name"
+                                    aria-label="Database product name">
                             </div>
 
                             <div class="mb-3 d-flex align-items-center">
-                                <input type="number" step="0.01" class="form-control form-control-sm me-3" id="dbPrice" placeholder="Price" style="max-width:120px;" aria-label="Price">
+                                <input type="number" step="0.01" class="form-control form-control-sm me-3" id="dbPrice"
+                                    placeholder="Price" style="max-width:120px;" aria-label="Price">
 
                                 <label class="form-label mb-0 me-2">Bar Code</label>
 
-                                <!-- REMOVED: <input type="file" accept="image/*" id="barcodeFile" class="d-none"> -->
-                                <button type="button" id="barcodeCameraBtn" class="btn btn-sm me-2" style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
-                                        <path d="M9.5 2a.5.5 0 0 1 .5.5V3h2.5A1.5 1.5 0 0 1 14 4.5v6A1.5 1.5 0 0 1 12.5 12H3.5A1.5 1.5 0 0 1 2 10.5v-6A1.5 1.5 0 0 1 3.5 3H6v-.5A.5.5 0 0 1 6.5 2h3z" />
+                                <input type="file" accept="image/*" id="barcodeFile" class="d-none">
+                                <button type="button" id="barcodeCameraBtn" class="btn btn-sm me-2"
+                                    style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
+                                        class="bi bi-camera" viewBox="0 0 16 16">
+                                        <path
+                                            d="M9.5 2a.5.5 0 0 1 .5.5V3h2.5A1.5 1.5 0 0 1 14 4.5v6A1.5 1.5 0 0 1 12.5 12H3.5A1.5 1.5 0 0 1 2 10.5v-6A1.5 1.5 0 0 1 3.5 3H6v-.5A.5.5 0 0 1 6.5 2h3z" />
                                         <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
                                     </svg>
                                 </button>
 
-                                <span id="barcodeFileName" class="small text-muted">No barcode scanned</span>
+                                <span id="barcodeFileName" class="small text-muted">No file chosen</span>
                             </div>
 
                             <div class="mb-3 d-grid gap-2">
-                                <button type="submit" class="btn" style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">Add to Database</button>
+                                <button type="submit" class="btn"
+                                    style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">Add to
+                                    Database</button>
 
-                                <button type="button" id="viewDbItems" class="btn btn-outline-secondary">View all Database Items</button>
+                                <button type="button" id="viewDbItems" class="btn btn-outline-secondary">View all
+                                    Database Items</button>
                             </div>
 
                         </form>
@@ -129,7 +190,7 @@
 
         </div>
 
-        <!-- Fridge Inventory card spanning full width beneath the two cards -->
+        <!-- NEW: Fridge Inventory card spanning full width beneath the two cards -->
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card">
@@ -138,7 +199,87 @@
 
                         <!-- list of horizontal cards (each fridge item is a card) -->
                         <div class="mt-3">
-                            <!-- Items will be dynamically loaded here by Fridge.js -->
+                            <!-- Item 1 -->
+                            <div class="card mb-2">
+                                <div class="card-body d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-baseline">
+                                        <h5 class="mb-0 me-3">Milk</h5>
+                                        <div class="small">
+                                            Price: $1.49
+                                            <span class="text-muted ms-2">Added by Alice (2 days ago)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-sm me-1"
+                                            style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;"
+                                            aria-label="Edit Milk">
+                                            <!-- pencil placeholder (unicode) -->
+                                            ✏️
+                                        </button>
+                                        <button type="button" class="btn btn-sm"
+                                            style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;"
+                                            aria-label="Info Milk">
+                                            <!-- info placeholder (unicode) -->
+                                            ℹ️
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item 2 -->
+                            <div class="card mb-2">
+                                <div class="card-body d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-baseline">
+                                        <h5 class="mb-0 me-3">Yogurt</h5>
+                                        <div class="small">
+                                            Price: $0.89
+                                            <span class="text-muted ms-2">Added by Bob (5 days ago)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-sm me-1"
+                                            style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;"
+                                            aria-label="Edit Yogurt">
+                                            ✏️
+                                        </button>
+                                        <button type="button" class="btn btn-sm"
+                                            style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;"
+                                            aria-label="Info Yogurt">
+                                            ℹ️
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item 3 -->
+                            <div class="card mb-2">
+                                <div class="card-body d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-baseline">
+                                        <h5 class="mb-0 me-3">Eggs (dozen)</h5>
+                                        <div class="small">
+                                            Price: $2.99
+                                            <span class="text-muted ms-2">Added by Carol (1 day ago)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-sm me-1"
+                                            style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;"
+                                            aria-label="Edit Eggs">
+                                            ✏️
+                                        </button>
+                                        <button type="button" class="btn btn-sm"
+                                            style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;"
+                                            aria-label="Info Eggs">
+                                            ℹ️
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add more items here as needed - each item is a .card that spans the parent width -->
                         </div>
 
                     </div>
@@ -149,10 +290,50 @@
 
     </div>
 
+    <!-- Edit Quantity Modal -->
+    <div class="modal fade" id="editQuantityModal" tabindex="-1" aria-labelledby="editQuantityModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="editQuantityForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editQuantityModalLabel">Edit quantity</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <input type="hidden" id="editItemId" value="">
+                        <div class="mb-2">
+                            <label class="form-label small text-muted">Product</label>
+                            <div id="editItemName" class="fw-semibold"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editQuantityInput" class="form-label">Quantity (set to 0 to remove)</label>
+                            <input id="editQuantityInput" type="number" min="0" step="1" class="form-control" value="1"
+                                required>
+                        </div>
+
+                        <div id="editModalAlert" class="small text-danger d-none"></div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button id="editSaveBtn" type="submit" class="btn"
+                            style="background-color:#fe5a5a;border-color:#fe5a5a;color:#fff;">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="Fridge.js" type="module"></script>
     <script src="index.js" type="module"></script>
 </body>
+
 </html>
